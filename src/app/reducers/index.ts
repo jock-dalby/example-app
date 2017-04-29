@@ -55,6 +55,7 @@ export interface State {
   router: fromRouter.RouterState;
 }
 
+/************************ START *******************************/
 
 /**
  * Because metareducers take a reducer function and return a new reducer,
@@ -63,6 +64,7 @@ export interface State {
  * wrapping that in storeLogger. Remember that compose applies
  * the result from right to left.
  */
+
 const reducers = {
   search: fromSearch.reducer,
   books: fromBooks.reducer,
@@ -71,8 +73,30 @@ const reducers = {
   router: fromRouter.routerReducer,
 };
 
+/**
+ * The compose function is one of our most handy tools. In basic terms, you give
+ * it any number of functions and it returns a function. This new function
+ * takes a value and chains it through every composed function, returning
+ * the output.
+ */
 const developmentReducer: ActionReducer<State> = compose(storeFreeze, combineReducers)(reducers);
+/**
+ * storeFreeze prevents state from being mutated. When mutation occurs, an
+ * exception will be thrown. This is useful during development mode to
+ * ensure that none of the reducers accidentally mutates the state.
+ */
+
+/**
+ * combineReducers is another useful metareducer that takes a map of reducer
+ * functions and creates a new reducer that gathers the values
+ * of each reducer and stores them using the reducer's key. Think of it
+ * almost like a database, where every reducer is a table in the db.
+ *
+ * More: https://egghead.io/lessons/javascript-redux-implementing-combinereducers-from-scratch
+ */
 const productionReducer: ActionReducer<State> = combineReducers(reducers);
+
+/************************ END *******************************/
 
 export function reducer(state: any, action: any) {
   if (environment.production) {
@@ -81,7 +105,6 @@ export function reducer(state: any, action: any) {
     return developmentReducer(state, action);
   }
 }
-
 
 /**
  * A selector function is a map function factory. We pass it parameters and it
@@ -106,7 +129,7 @@ export const getBooksState = (state: State) => state.books;
  * need to make new selectors that wrap them.
  *
  * The createSelector function from the reselect library creates
- * very efficient selectors that are memoized and only recompute when arguments change.
+ * very efficient selectors that are memorized and only recompute when arguments change.
  * The created selectors can also be composed together to select different
  * pieces of state.
  */
